@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RecipeHunt</title>
+    <link rel="icon" type="image/svg+xml" href="resources/images/rhlogo.png" />
+    <link rel="stylesheet" href="resources/css/style.css" />
+    <link rel="stylesheet" href="resources/css/responsive.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="main-container">
+        <div class="nav">
+          <div class="logo">
+            <a href="#"><img src="resources/images/logoo.png" alt="Logo" /></a>
+          </div>
+          <nav>
+            <ul>
+              <li><a href="#">Home</a></li>
+              <li><a href="#services">Find</a></li>
+              <li><a href="favorite.html">Favorite</a></li>
+            </ul>
+          </nav>
+          <div class="burger">
+            <div class="line-1"></div>
+            <div class="line-2"></div>
+            <div class="line-3"></div>
+          </div>
+        </div>
+
+        <section id="hero">
+          <div class="hero-left">
+            <h3 class="pre-title">Resep Lezat untuk Setiap Momen</h3>
+            <h1 class="hero-name">Temukan Inspirasi Masakan Setiap Hari</h1>
+            <h2>
+              Cari inspirasi resep masakan yang mudah diikuti, lengkap dengan
+              panduan langkah demi langkah dan informasi nutrisi.
+            </h2>
+            <div class="hero-info">
+              <a href="#services">
+                <button class="btn">Temukan Resep</button>
+              </a>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <img src="resources/images/Vector.png" alt="banner-food" />
+          </div>
+        </section>
+      </div>
+    </header>
+    <!-- End Header -->
+
+    <!-- Services -->
+    <section id="services">
+      <div class="services main-container">
+        <h3 class="pre-title">Apa yang Ingin Anda Masak Hari Ini?</h3>
+        <h1 class="section-title services-title">Cari Inspirasi Masakan</h1>
+        <div class="search-container">
+          <input type="search" id="recipe-search" placeholder="Cari resep..." />
+          <button type="submit" class="btn-search">Cari</button>
+        </div>
+
+        <div class="filter-container">
+          <input
+            type="text"
+            id="ingredient-input"
+            placeholder="Pisahkan dengan koma"
+          />
+          <button id="search-ingredient" class="btn-search">
+            Cari Berdasarkan Bahan
+          </button>
+        </div>
+        <div id="results-container" class="results-container"></div>
+      </div>
+    </section>
+    <!-- End Services -->
+
+    <!-- Footer -->
+    <footer>
+      <p>&#169; 2024 - By Hafid Ahmad</p>
+    </footer>
+    <!-- End Footer -->
+
+    <script src="js/home.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
