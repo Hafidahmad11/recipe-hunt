@@ -16,56 +16,81 @@ document.addEventListener("DOMContentLoaded", () => {
   async function searchRecipes() {
     const query = document.getElementById("recipe-search").value;
     const resultsContainer = document.getElementById("results-container");
-    resultsContainer.innerHTML = ""; 
+    resultsContainer.innerHTML = "";
 
     if (!query) {
       showAlert("Silakan masukkan kata kunci pencarian.", "error");
       return;
     }
 
+    // Cek cache dengan expiration time (6 jam)
+    const cacheExpiration = 6 * 60 * 60 * 1000; // 6 jam dalam milidetik
+    const cachedItem = localStorage.getItem(`recipe_${query}`);
+    
+    if (cachedItem) {
+      const cachedData = JSON.parse(cachedItem);
+      const now = new Date().getTime();
+
+      if (now - cachedData.timestamp < cacheExpiration) {
+        // console.log("Menggunakan data dari cache.");
+        renderResults(cachedData.data);
+        return;
+      } else {
+        localStorage.removeItem(`recipe_${query}`); // Hapus cache lama
+      }
+    }
+
     resultsContainer.innerHTML = "<div class='loader'></div>";
 
     const appId = "400c6f53";
-    const appKey = "b93ff95fb16c4f1c1da6b49dbc3f38e0";
-    const apiUrl = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&to=10`;
+    const appKey = "b6dc32f5a5a1aee3967f56ff9a514525";
+    const apiUrl = `https://api.edamam.com/api/recipes/v2?type=public&q=${query}&app_id=${appId}&app_key=${appKey}`;
 
     try {
       const response = await fetch(apiUrl);
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
 
+      const data = await response.json();
       if (data.hits.length > 0) {
-        resultsContainer.innerHTML = "";
-        data.hits.forEach((hit) => {
-          const recipe = hit.recipe;
-          const card = document.createElement("div");
-          card.className = "result-card";
-          card.innerHTML = `
-            <img src="${recipe.image}" alt="${recipe.label}">
-            <h3>${recipe.label}</h3>
-            <p>${recipe.source}</p>
-            <a class="btn-add-favorite" data-recipe="${escape(JSON.stringify(recipe))}">Tambahkan ke Favorit</a>
-            <a href="${recipe.url}" target="_blank">Lihat Resep</a>
-          `;
-          resultsContainer.appendChild(card);
-        });
+        // Simpan ke cache dengan timestamp
+        localStorage.setItem(`recipe_${query}`, JSON.stringify({
+          data: data,
+          timestamp: new Date().getTime()
+        }));
+        renderResults(data);
       } else {
         resultsContainer.innerHTML = "<p>Tidak ada hasil ditemukan.</p>";
       }
-
-      const addFavoriteButtons = document.querySelectorAll(".btn-add-favorite");
-      addFavoriteButtons.forEach((button) => {
-        button.addEventListener("click", addToFavorites);
-      });
     } catch (error) {
       console.error("Error fetching the API:", error);
       resultsContainer.innerHTML = "<p>Terjadi kesalahan saat mengambil data.</p>";
     }
   }
 
+  function renderResults(data) {
+    const resultsContainer = document.getElementById("results-container");
+    resultsContainer.innerHTML = "";
+    data.hits.forEach((hit) => {
+      const recipe = hit.recipe;
+      const card = document.createElement("div");
+      card.className = "result-card";
+      card.innerHTML = `
+        <img src="${recipe.image}" alt="${recipe.label}">
+        <h3>${recipe.label}</h3>
+        <p>${recipe.source}</p>
+        <a href="${recipe.url}" target="_blank">Lihat Resep</a>
+      `;
+      resultsContainer.appendChild(card);
+    });
+  }
+
+
   async function searchByIngredients() {
     const ingredients = document.getElementById("ingredient-input").value;
     const resultsContainer = document.getElementById("results-container");
-    resultsContainer.innerHTML = ""; 
+    resultsContainer.innerHTML = "";
 
     if (!ingredients) {
       showAlert("Silakan masukkan bahan.", "error");
@@ -83,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
 
       if (data.hits.length > 0) {
-        resultsContainer.innerHTML = ""; 
+        resultsContainer.innerHTML = "";
         data.hits.forEach((hit) => {
           const recipe = hit.recipe;
           const card = document.createElement("div");
@@ -92,7 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <img src="${recipe.image}" alt="${recipe.label}">
             <h3>${recipe.label}</h3>
             <p>${recipe.source}</p>
-            <a class="btn-add-favorite" data-recipe="${escape(JSON.stringify(recipe))}">Tambahkan ke Favorit</a>
+            <a class="btn-add-favorite" data-recipe="${escape(
+              JSON.stringify(recipe)
+            )}">Tambahkan ke Favorit</a>
             <a href="${recipe.url}" target="_blank">Lihat Resep</a>
           `;
           resultsContainer.appendChild(card);
@@ -107,7 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } catch (error) {
       console.error("Error fetching the API:", error);
-      resultsContainer.innerHTML = "<p>Terjadi kesalahan saat mengambil data.</p>";
+      resultsContainer.innerHTML =
+        "<p>Terjadi kesalahan saat mengambil data.</p>";
     }
   }
 
